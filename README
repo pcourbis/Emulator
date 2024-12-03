@@ -2,3 +2,122 @@ Voir http://www.courbis.fr/spip.php?article82
 
 (c) P. Courbis 1992-2024
 Reproduction interdite
+
+
+Installation :
+
+compiler avec « make »
+installer une copie de la ROM de la HP48 sous forme d’un dump hexadécimal dans le fichier « rom » (2369B108DAD...).
+lancer « mkdb » pour créer les banques de données
+lancer « emulator » pour lancer l’émulateur
+Remarque : sous Cygwin, l’émulation X.Window doit être lancée et « emulator » démarré dpuis une fenêtre ayant des droits d’affichage sur le serveur X (le mieux est de lancer un terminal depuis le menu X de Cygwin et de démarrer l’émulateur dedans).
+
+Les Roms disponibles sont les suivantes :
+
+HP48sx	Version A
+Version B
+Version C
+Version D
+Version E
+Version J
+HP48gx	Version K
+Version L
+Version M
+Version P
+Version R
+
+Mode d’emploi de l’émulateur :
+
+Lorsque l’émulateur est lancé, en plus des messages affichés dans la console de lancement, deux fenêtres s’affichent :
+
+une représentation de la HP48 avec son écran et son clavier. Les touches du clavier sont cliquable (1 click pour enfoncer la touche, attendre le RTI, puis un second click pour la relâcher).
+ 
+une fenêtre de supervision
+
+Cette dernière permet :
+
+de lancer l’exécution (bouton RUN)
+de faire du pas à pas en mode stoppé (STEP)
+de la stopper (bouton STOP qui remplace le bouton STEP en mode RUN)
+de forcer la mise à jour de l’écran (Update DSP)
+de quitter l’émulateur (QUIT)
+de « réveiller » la HP (sortie du mode SHUTDOWN)
+de dumper les informations calculées (DUMP). Ceci est fait automatiquement lorsqu’on quitte l’émulateur.
+Au dessus de la rangée de bouton, est affiché le code désassemblé en cours d’éexécution (adresse, instruction).
+
+Sous la rangée de bouton sont affichés une décompilation du sysRPL en cours d’exécution (symbole si il est connu et séquence héxadécimale).
+
+Enfin on trouve la valeur des différents registres (PC, D0, D1...).
+
+Pour D0 et D1, la zone mémoire pointée est elle aussi affichée.
+
+En cliquant sur le carré à gauche d’un registre, il est possible d’en éditer la valeur.
+
+Lorsque la calculatrice a fonctionné un certain temps, il est possible de convertir les banques de données en une version lisible à l’aide du programme « decompile ».
+
+Autres programmes :
+
+ExtractObjects : extrait la liste d’objets utilisés lors de l’émulation - utilisé par le programme « decompile »
+decompile : force la décompilation de symboles RPL / sysRPL connus, des polices de caractères, etc...
+peek (suivi de l’adresse à lire) permet de lire le contenu de la mémoire à une adresse donnée
+ExtractObjects extrait la liste des objets interessants
+certains programmes existent aussi en version (odXXX), od signifiant OnDisk, dans le cas où la mémoire vive est insuffisante pour réaliser l’exécution en chargeant les données en mémoire (obsolète).
+Print crée les fichiers « Dump_xxx », xxx correspondant aux différentes banques décodées, sous une forme lisible. Voici par exemple le début de la ROM de la 48 :
+00000 : 23 p= #3 / Nibbles used here : 5 (R)
+00002 : 69B1 goto #001BC
+
+00006 : 08DAD F100
+
+
+
+0000F : 85E st=1 (14)
+
+00012 : 4F0 goc #00022
+
+
+00015 : 86F ?st=0 (15)
+
+00018 : 80 goyes #00020
+
+
+0001A : 06 rstk=c
+
+0001C : 6120 goto #0003E
+
+
+00020 : 03 rtncc
+
+
+00022 : 87F ?st=1 (15)
+
+00025 : 5F goyes #0001A
+
+
+On voit que les 6 premiers quartets ont été utilisés lors du boot mais que les 6 quartets situés à l’’adresse 00006 ne l’ont pas été. Par contre le code en 0000F a, lui, été utilisé.
+
+De plus, 5 quartets ont été lus en 00000.
+
+Bugs :
+
+la vitesse (c’est lent, mais tout est émulé, y compris les cycles d’horloge)
+le contexte n’est pas sauvé lorsqu’on quitte l’émulateur. Il faut reprendre toute la séquence de boot au redémarrage.
+l’affichage est laid. En particulier les inscriptions du clavier ne sont pas toutes reprises et il faut avoir une 48 sous les yeux (ou une photo, voir ci-dessous) pour connaître toutes les affectations des touches.
+testé uniquement avec la HP48 pour des roms versions A, D, J, M, N et L.
+les bugs du Saturn ne sont pas émulés.
+L’extinction de l’écran n’est pas gérée (si on éteint la machine, l’affichage est remplis de parasites).
+certaines fonctions ne marchent pas pour une raison inconnue : le réglage de la date/heure.
+la fonctionnalité AUTORELASE est incompatible avec certains menus.
+
+Changelog
+
+Juin 2024 : ajout de déclarations explicites et d’includes pour éviter les warnings à la compilation, augmentation de la zone mémoire de stockage des commentaires, ajout d’une fonction « AUTORELEASE » sur les touches (sauf la touche [ON] et les combinaisons de touches avec [ON]) pour éviter d’avoir à reclicker pour les désactiver (option à la compilation). ATTENTION : cette fonctionnalité empêche certains menus (MATRIX, PLOT...) de fonctionner. Pour l’activer clicker sur la cas à gauche de « Autorelease » en bas de la fenêtre de debug.
+
+TODO
+
+Trouver les bugs !
+
+Anecdote :
+
+Pendant le développement du programme, je suis tombé sur un phénomène curieux : une colonne de pixel manquait à l’affichage d’une des touches de fonction du « Try to recover Memory ? » (sur le [NO] me semble t’il). Après avoir tenté vainement de débugguer mon programme, j’ai fini par me rendre compte que le bug venait... du code HP qui oubliait l’affichage de la dernière colonne de pixels
+
+
