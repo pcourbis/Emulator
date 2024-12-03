@@ -1,0 +1,21 @@
+#!/bin/sh
+
+cd Book
+for i in *
+do
+	echo Preparing table $i
+	NAME=`echo $i | tr "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "abcdefghijklmnopqrstuvwxyz"`
+	sort -u $i > ../Book_S/$NAME
+done
+cd ../Book_S
+mv character chars
+mv algebraic alge
+mv directory dir
+mv librarydata libdata
+mv linkedarray linked
+mv longcomplex lcmplx
+mv reserved1 extptr
+mv reserved2 res1
+mv reserved3 res2
+mv reserved4 res3
+
